@@ -170,6 +170,7 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         onlyEventOrganizer
         verifyCaller(msg.sender)
         generated(_barCode)
+        ticketOwner(_barCode, msg.sender)
         notExpired(_barCode)
         notFinished(_barCode) {
 
