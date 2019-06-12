@@ -34,12 +34,12 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
     struct TicketOwnershipHistory {
         uint barCode;
         address payable ownerID;
-        uint ticketPrice;
+        uint256 ticketPrice;
     }
 
     mapping (uint => Ticket) public tickets;
-    mapping (uint => uint) public ticketsForSale;
-    mapping (uint => uint) public ticketsForSocialSale;
+    mapping (uint => uint256) public ticketsForSale;
+    mapping (uint => uint256) public ticketsForSocialSale;
     mapping (uint => TicketOwnershipHistory[]) public ticketsOwnershipHistory;
 
     event Generated(uint barCode);
@@ -65,21 +65,6 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
      modifier paidEnough(uint _price) {
         require(msg.value >= _price, "PAID VALUE IS NOT ENOUGH");
         _;
-    }
-    
-    // Define a modifier that checks the price and refunds the remaining balance
-    modifier checkValue(uint _barCode) {
-        _;
-        uint _price = ticketsForSale[_barCode];
-        uint amountToReturn = msg.value - _price;
-        tickets[_barCode].ownerID.transfer(amountToReturn);
-    }
-
-    modifier checkSocialValue(uint _barCode) {
-        _;
-        uint _price = ticketsForSocialSale[_barCode];
-        uint amountToReturn = msg.value - _price;
-        tickets[_barCode].ownerID.transfer(amountToReturn);
     }
 
     modifier ticketOwner(uint _barCode, address _address) {
@@ -129,7 +114,7 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         require(tickets[_barCode].ticketState != State.Expired, "TICKET STATE IS EXPIRED");
         _;
     }
-    
+
 
     constructor() Ownable() public payable {
         barCode = 0;
@@ -183,18 +168,20 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         onlySocialMember
         verifyCaller(msg.sender)
         onSale(_barCode)
-        paidEnough(msg.value)
+        paidEnough(ticketsForSale[_barCode])
         notExpired(_barCode)
-        notFinished(_barCode)
-        checkValue(_barCode) payable {
+        notFinished(_barCode) payable {
 
         tickets[_barCode].ownerID = msg.sender;
         tickets[_barCode].ticketState = State.Sold;
 
-        ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, ticketsForSale[_barCode]));
+        uint256 _price = ticketsForSale[_barCode];
+        ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, _price));
+        tickets[_barCode].eventOrganizerID.transfer(_price);
+        uint256 amountToReturn = msg.value - _price;
+        msg.sender.transfer(amountToReturn);
         delete ticketsForSale[_barCode];
 
-        tickets[_barCode].eventOrganizerID.transfer(msg.value);
         emit Sold(_barCode);
     }
 
@@ -213,8 +200,7 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         onlySocialMember
         verifyCaller(msg.sender)
         onSocialSale(_barCode)
-        paidEnough(msg.value)
-        checkSocialValue(_barCode)
+        paidEnough(ticketsForSocialSale[_barCode])
         notFinished(_barCode)
         notExpired(_barCode) payable {
 
@@ -222,10 +208,15 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         tickets[_barCode].ownerID = msg.sender;
         tickets[_barCode].ticketState = State.SocialSold;
 
-        ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, ticketsForSocialSale[_barCode]));
-        delete ticketsForSocialSale[_barCode];
+        uint256 _price = ticketsForSocialSale[_barCode];
+        ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, _price));
         tickets[_barCode].lastSocialMemberID.transfer(msg.value);
-        emit Sold(_barCode);
+        uint256 amountToReturn = msg.value - _price;
+        msg.sender.transfer(amountToReturn);
+
+        delete ticketsForSocialSale[_barCode];
+
+        emit SocialSold(_barCode);
     }
 
     function receiveTicket(uint _barCode)  public
