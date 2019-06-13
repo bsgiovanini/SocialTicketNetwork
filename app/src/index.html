@@ -1,37 +1,30 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
   <head>
-    <title>MetaCoin | Truffle Webpack Demo w/ Frontend</title>
-  </head>
-  <style>
-    input {
-      display: block;
-      margin-bottom: 12px;
-    }
-  </style>
-  <body>
-    <h1>MetaCoin — Example Truffle Dapp</h1>
-    <p>You have <strong class="balance">loading...</strong> META</p>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width,initial-scale=1.0" />
 
-    <h1>Send MetaCoin</h1>
-
-    <label for="amount">Amount:</label>
-    <input type="text" id="amount" placeholder="e.g. 95" />
-
-    <label for="receiver">To address:</label>
-    <input
-      type="text"
-      id="receiver"
-      placeholder="e.g. 0x93e66d9baea28c17d9fc393b53e3fbdd76899dae"
+    <link
+      href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons"
+      rel="stylesheet"
     />
 
-    <button onclick="App.sendCoin()">Send MetaCoin</button>
+    <link
+      href="https://fonts.googleapis.com/css?family=Material+Icons"
+      rel="stylesheet"
+    />
 
-    <p id="status"></p>
-    <p>
-      <strong>Hint:</strong> open the browser developer console to view any
-      errors and warnings.
-    </p>
+    <title>bikestop</title>
+  </head>
+  <body>
+    <noscript>
+      <strong
+        >We're sorry but bikestop doesn't work properly without JavaScript
+        enabled. Please enable it to continue.</strong
+      >
+    </noscript>
+    <div id="app"></div>
     <script src="index.js"></script>
   </body>
 </html>
