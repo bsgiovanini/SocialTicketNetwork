@@ -14,7 +14,7 @@ contract SocialTicketMemberRole {
 
     // Define a function 'isConsumer' to check this role
     function isSocialMember(address account) public view returns (bool) {
-        require(socialMembers.has(account), "DOES_NOT_HAVE_MEMBER_ROLE");
+        return socialMembers.has(account);
     }
 
     // Define a function 'addSocialMember' that adds this role

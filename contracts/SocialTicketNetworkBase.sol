@@ -51,9 +51,8 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
     event Expired(uint barCode);
 
       // Define a modifer that checks to see if msg.sender == owner of the contract
-    modifier onlyOwner() {
-        require(isOwner(), "SENDER IS NOT OWNER");
-        _;
+    function isOwner(address _address) public view returns (bool) {
+        return _address == owner();
     }
 
     // Define a modifer that verifies the Caller

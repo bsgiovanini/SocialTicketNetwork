@@ -14,7 +14,7 @@ contract EventExecutorRole  {
 
     // Define a function 'isConsumer' to check this role
     function isEventExecutors(address account) public view returns (bool) {
-        require(eventExecutors.has(account), "DOES_NOT_HAVE_EXECUTOR_ROLE");
+        return eventExecutors.has(account);
     }
 
     // Define a function 'addEventExecutors' that adds this role

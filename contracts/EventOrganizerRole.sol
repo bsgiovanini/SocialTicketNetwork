@@ -14,7 +14,7 @@ contract EventOrganizerRole {
 
     // Define a function 'isConsumer' to check this role
     function isEventOrganizer(address account) public view returns (bool) {
-        require(eventOrganizers.has(account), "DOES_NOT_HAVE_ORGANIZER_ROLE");
+        return eventOrganizers.has(account);
     }
 
     // Define a function 'addEventOrganizer' that adds this role
