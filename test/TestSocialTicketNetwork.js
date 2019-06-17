@@ -60,22 +60,12 @@ contract("SocialTicketNetworkBase putTicketOnSale tests", accs => {
     let resultSale = await instance.ticketsForSale.call(barCode);
     assert.equal(resultSale, 1);
 
-    await instance.generateTicket("Rock In Rio", "Second day of the event", {
-      from: user2
+    await instance.expireTicket(barCode, {
+      from: user1
     });
 
-    barCode = 2;
-
-    try {
-      await instance.putTicketOnSale(barCode, 1, {
-        from: user1
-      });
-    } catch (error) {
-      assert.isAbove(
-        error.message.search("TICKET NOT OWNED BY THE ADDRESS"),
-        -1
-      );
-    }
+    result = await instance.tickets.call(barCode);
+    assert.equal(result.ticketState, 6);
   });
 });
 

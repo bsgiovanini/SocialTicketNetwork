@@ -61,7 +61,7 @@ export default {
           icon: "home",
           title: "Executor"
         },
-        socialMember: { link: "/socialMember", icon: "home", title: "Member" }
+        socialMember: { link: "/home", icon: "home", title: "Member" }
       }
     };
   },

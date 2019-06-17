@@ -1,13 +1,13 @@
 <template>
   <v-form v-model="valid">
     <v-container>
-      <v-alert :value="addressAdded$" type="success">Address successfully added</v-alert>
+      <v-alert :value="addressAdded$" dismissible type="success">Address successfully added</v-alert>
       <v-layout>
         <v-flex xs12 md4>
           <v-text-field
             v-model="address"
             :rules="addressRules"
-            :counter="10"
+            :counter="42"
             label="Address"
             required
           ></v-text-field>

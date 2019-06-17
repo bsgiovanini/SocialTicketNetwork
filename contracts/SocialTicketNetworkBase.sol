@@ -39,8 +39,14 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
 
     mapping (uint => Ticket) public tickets;
     mapping (uint => uint256) public ticketsForSale;
+    uint[] public ticketsForSaleList;
+    mapping (uint => uint) indexOfTicketsForSaleList;
     mapping (uint => uint256) public ticketsForSocialSale;
+    uint[] public ticketsForSocialSaleList;
+    mapping (uint => uint) indexOfTicketsForSocialSaleList;
     mapping (uint => TicketOwnershipHistory[]) public ticketsOwnershipHistory;
+    mapping (address => uint[]) public ticketsByOwner;
+    mapping (address => mapping(uint => uint)) public indexOfTicketsByOwner;
 
     event Generated(uint barCode);
     event OnSale(uint barCode);
@@ -126,6 +132,8 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         }
     }
 
+    
+
     function generateTicket(
         string memory _eventName,
         string memory _ticketNotes
@@ -146,6 +154,8 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         );
 
         tickets[barCode] = tkt;
+        ticketsByOwner[msg.sender].push(barCode);
+        indexOfTicketsByOwner[msg.sender][barCode] = ticketsByOwner[msg.sender].length - 1;
 
         emit Generated(barCode);
     }
@@ -159,8 +169,18 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         notFinished(_barCode) {
 
         ticketsForSale[_barCode] = _ticketPrice;
+        ticketsForSaleList.push(_barCode);
+        indexOfTicketsForSaleList[_barCode] = ticketsForSaleList.length - 1;
         tickets[_barCode].ticketState = State.OnSale;
         emit OnSale(_barCode);
+    }
+
+    function getPriceByTicketOnSale(uint _barCode) public view returns(uint256) {
+        return ticketsForSale[_barCode];
+    }
+
+    function getPriceByTicketOnSocialSale(uint _barCode) public view returns(uint256) {
+        return ticketsForSocialSale[_barCode];
     }
 
     function buyTicket(uint _barCode) public
@@ -176,6 +196,10 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
 
         uint256 _price = ticketsForSale[_barCode];
         ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, _price));
+        delete ticketsByOwner[tickets[_barCode].eventOrganizerID][indexOfTicketsByOwner[tickets[_barCode].eventOrganizerID][barCode]];
+        ticketsByOwner[msg.sender].push(barCode);
+        indexOfTicketsByOwner[msg.sender][barCode] = ticketsByOwner[msg.sender].length - 1;
+        delete ticketsForSaleList[indexOfTicketsForSaleList[_barCode]];
         tickets[_barCode].eventOrganizerID.transfer(_price);
         uint256 amountToReturn = msg.value - _price;
         msg.sender.transfer(amountToReturn);
@@ -191,6 +215,8 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         notFinished(_barCode)
         ticketOwner(_barCode, msg.sender) {
             ticketsForSocialSale[_barCode] = _ticketPrice;
+            ticketsForSocialSaleList.push(_barCode);
+            indexOfTicketsForSocialSaleList[_barCode] = ticketsForSocialSaleList.length - 1;
             tickets[_barCode].ticketState = State.OnSocialSale;
             emit OnSocialSale(_barCode);
         }
@@ -209,12 +235,15 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
 
         uint256 _price = ticketsForSocialSale[_barCode];
         ticketsOwnershipHistory[_barCode].push(TicketOwnershipHistory(_barCode, msg.sender, _price));
+        delete ticketsByOwner[tickets[_barCode].lastSocialMemberID][indexOfTicketsByOwner[tickets[_barCode].lastSocialMemberID][barCode]];
+        ticketsByOwner[msg.sender].push(_barCode);
+        indexOfTicketsByOwner[msg.sender][barCode] = ticketsByOwner[msg.sender].length - 1;
         tickets[_barCode].lastSocialMemberID.transfer(msg.value);
         uint256 amountToReturn = msg.value - _price;
         msg.sender.transfer(amountToReturn);
 
         delete ticketsForSocialSale[_barCode];
-
+        delete ticketsForSocialSaleList[indexOfTicketsForSocialSaleList[_barCode]];
         emit SocialSold(_barCode);
     }
 
@@ -223,7 +252,12 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         ticketHasOwner(_barCode)
         verifyCaller(msg.sender)
         notExpired(_barCode) {
+        
+        tickets[_barCode].lastSocialMemberID = tickets[_barCode].ownerID;
         tickets[_barCode].ownerID = msg.sender;
+        delete ticketsByOwner[tickets[_barCode].lastSocialMemberID][indexOfTicketsByOwner[tickets[_barCode].lastSocialMemberID][barCode]];
+        ticketsByOwner[msg.sender].push(_barCode);
+        indexOfTicketsByOwner[msg.sender][barCode] = ticketsByOwner[msg.sender].length - 1;
         tickets[_barCode].ticketState = State.Finished;
         emit Finished(_barCode);
     }
@@ -233,8 +267,43 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         notFinished(_barCode)
         verifyCaller(msg.sender) {
 
+
+        delete ticketsByOwner[tickets[_barCode].ownerID][indexOfTicketsByOwner[tickets[_barCode].ownerID][barCode]];
+        ticketsByOwner[msg.sender].push(_barCode);
+        indexOfTicketsByOwner[msg.sender][barCode] = ticketsByOwner[msg.sender].length - 1;
         tickets[_barCode].ownerID = msg.sender;
         tickets[_barCode].ticketState = State.Expired;
         emit Expired(_barCode);
+    }
+
+     function loadTicketsByOwner(address _owner)public view returns(uint[] memory) {
+         return ticketsByOwner[_owner];
+    }
+
+    function loadTicketsOnSale() public view returns(uint[] memory) {
+        return ticketsForSaleList;
+    }
+
+    function loadTicketsOnSocialSale() public view returns(uint[] memory) {
+        return ticketsForSocialSaleList;
+    }
+
+    function getTicketByBarCode(uint _barCode) public view returns(
+        address,
+        address,
+        string memory,
+        string memory,
+        State,
+        address,
+        uint) {
+        return (
+            tickets[_barCode].ownerID,
+            tickets[_barCode].eventOrganizerID,
+            tickets[_barCode].eventName,
+            tickets[_barCode].ticketNotes,
+            tickets[_barCode].ticketState,
+            tickets[_barCode].lastSocialMemberID,
+            _barCode
+        );
     }
 }

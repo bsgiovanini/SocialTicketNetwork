@@ -10,6 +10,17 @@ class Contract {
     this.role$ = new Subject();
     this.addressAdded$ = new Subject();
     this.owner$ = new Subject();
+    this.ticketGenerated$ = new Subject();
+    this.myTicketsLoaded$ = new Subject();
+    this.ticketIsOnSale$ = new Subject();
+    this.ticketPriceByTicket$ = new Subject();
+    this.ticketExpired$ = new Subject();
+    this.ticketsOnSaleLoaded$ = new Subject();
+    this.ticketBought$ = new Subject();
+    this.ticketIsOnSocialSale$ = new Subject();
+    this.ticketsOnSocialSaleLoaded$ = new Subject();
+    this.ticketPriceBySocialTicket$ = new Subject();
+    this.ticketSocialBought$ = new Subject();
 
     if (window.ethereum) {
       // use MetaMask's provider
@@ -86,7 +97,6 @@ class Contract {
   }
 
   addEventOrganizer(account) {
-    debugger;
     const { addEventOrganizer } = this.meta.methods;
     addEventOrganizer(account)
       .send({ from: this.account })
@@ -101,6 +111,167 @@ class Contract {
       .send({ from: this.account })
       .then(msg => {
         this.addressAdded$.next(msg);
+      });
+  }
+
+  generateTicket(eventName, ticketNotes) {
+    const { generateTicket } = this.meta.methods;
+    generateTicket(eventName, ticketNotes)
+      .send({ from: this.account })
+      .then(msg => {
+        this.ticketGenerated$.next(msg);
+      });
+  }
+
+  putTicketOnSale(barCode, price) {
+    const { putTicketOnSale } = this.meta.methods;
+    putTicketOnSale(barCode, price)
+      .send({ from: this.account })
+      .then(msg => {
+        this.ticketIsOnSale$.next({ barCode, price });
+      });
+  }
+
+  putTicketOnSocialSale(barCode, price) {
+    const { socialPutTicketOnSale } = this.meta.methods;
+    socialPutTicketOnSale(barCode, price)
+      .send({ from: this.account })
+      .then(msg => {
+        this.ticketIsOnSocialSale$.next({ barCode, price });
+      });
+  }
+
+  getPriceByTicketOnSale(barCode) {
+    const { getPriceByTicketOnSale } = this.meta.methods;
+    getPriceByTicketOnSale(barCode)
+      .call()
+      .then(price => {
+        this.ticketPriceByTicket$.next({ barCode, price });
+      });
+  }
+
+  getPriceByTicketOnSocialSale(barCode) {
+    const { getPriceByTicketOnSocialSale } = this.meta.methods;
+    getPriceByTicketOnSocialSale(barCode)
+      .call()
+      .then(price => {
+        this.ticketPriceBySocialTicket$.next({ barCode, price });
+      });
+  }
+
+  expireTicket(barCode) {
+    const { expireTicket } = this.meta.methods;
+    expireTicket(barCode)
+      .send({ from: this.account })
+      .then(msg => {
+        this.ticketExpired$.next(msg);
+      });
+  }
+
+  loadMyTickets() {
+    const { loadTicketsByOwner, getTicketByBarCode } = this.meta.methods;
+    loadTicketsByOwner(this.account)
+      .call()
+      .then(tickets => {
+        const toReturn = [];
+        const promises = [];
+        tickets.forEach(ticket => {
+          promises.push(getTicketByBarCode(ticket).call());
+        });
+        Promise.all(promises).then(data => {
+          data.forEach(tkt => {
+            if (tkt[2].trim().length > 0 && tkt[4] != 3)
+              toReturn.push({
+                ownerID: tkt[0],
+                eventOrganizerID: tkt[1],
+                eventName: tkt[2],
+                ticketNotes: tkt[3],
+                ticketState: tkt[4],
+                lastSocialMemberID: tkt[5],
+                barCode: tkt[6]
+              });
+          });
+          this.myTicketsLoaded$.next(toReturn);
+        });
+      });
+  }
+  loadTicketsOnSale() {
+    const { loadTicketsOnSale, getTicketByBarCode } = this.meta.methods;
+    loadTicketsOnSale()
+      .call()
+      .then(tickets => {
+        const toReturn = [];
+        const promises = [];
+        tickets.forEach(ticket => {
+          promises.push(getTicketByBarCode(ticket).call());
+        });
+        Promise.all(promises).then(data => {
+          data.forEach(tkt => {
+            if (tkt[2].trim().length > 0)
+              toReturn.push({
+                ownerID: tkt[0],
+                eventOrganizerID: tkt[1],
+                eventName: tkt[2],
+                ticketNotes: tkt[3],
+                ticketState: tkt[4],
+                lastSocialMemberID: tkt[5],
+                barCode: tkt[6]
+              });
+          });
+          this.ticketsOnSaleLoaded$.next(toReturn);
+        });
+      });
+  }
+
+  buyTicket(barCode, price) {
+    const { buyTicket } = this.meta.methods;
+    buyTicket(barCode)
+      .send({
+        from: this.account,
+        value: price
+      })
+      .then(msg => {
+        this.ticketBought$.next(msg);
+      });
+  }
+
+  socialBuyTicket(barCode, price) {
+    const { buyTicket } = this.meta.methods;
+    buyTicket(barCode)
+      .send({
+        from: this.account,
+        value: price
+      })
+      .then(msg => {
+        this.ticketSocialBought$.next(msg);
+      });
+  }
+
+  loadTicketsOnSocialSale() {
+    const { loadTicketsOnSocialSale, getTicketByBarCode } = this.meta.methods;
+    loadTicketsOnSocialSale()
+      .call()
+      .then(tickets => {
+        const toReturn = [];
+        const promises = [];
+        tickets.forEach(ticket => {
+          promises.push(getTicketByBarCode(ticket).call());
+        });
+        Promise.all(promises).then(data => {
+          data.forEach(tkt => {
+            if (tkt[2].trim().length > 0)
+              toReturn.push({
+                ownerID: tkt[0],
+                eventOrganizerID: tkt[1],
+                eventName: tkt[2],
+                ticketNotes: tkt[3],
+                ticketState: tkt[4],
+                lastSocialMemberID: tkt[5],
+                barCode: tkt[6]
+              });
+          });
+          this.ticketsOnSocialSaleLoaded$.next(toReturn);
+        });
       });
   }
 }
