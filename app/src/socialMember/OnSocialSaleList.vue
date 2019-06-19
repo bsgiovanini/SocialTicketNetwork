@@ -4,7 +4,7 @@
       <v-flex xs12 sm12>
         <v-card>
           <v-toolbar dark>
-            <v-toolbar-title>Tickets On Sale</v-toolbar-title>
+            <v-toolbar-title>Tickets On Social Sale</v-toolbar-title>
             <v-spacer></v-spacer>
           </v-toolbar>
 
@@ -50,7 +50,6 @@ export default {
     };
   },
   data: () => ({
-    dialog: false,
     ticketsOnSale: [],
     priceByTicket: {}
   }),
@@ -89,7 +88,6 @@ export default {
     });
 
     this.$observables.ticketsOnSocialSaleLoaded$.subscribe(tickets => {
-      debugger;
       this.reloadTicketsOnSocialSale(tickets);
     });
 
@@ -99,6 +97,7 @@ export default {
 
     this.$observables.ticketSocialBought$.subscribe(msg => {
       this.loadTicketsOnSocialSale();
+      contractService.loadMyTickets();
     });
   }
 };

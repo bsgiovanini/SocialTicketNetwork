@@ -21,6 +21,7 @@ class Contract {
     this.ticketsOnSocialSaleLoaded$ = new Subject();
     this.ticketPriceBySocialTicket$ = new Subject();
     this.ticketSocialBought$ = new Subject();
+    this.ticketExecuted$ = new Subject();
 
     if (window.ethereum) {
       // use MetaMask's provider
@@ -236,8 +237,8 @@ class Contract {
   }
 
   socialBuyTicket(barCode, price) {
-    const { buyTicket } = this.meta.methods;
-    buyTicket(barCode)
+    const { socialBuyTicket } = this.meta.methods;
+    socialBuyTicket(barCode)
       .send({
         from: this.account,
         value: price
@@ -272,6 +273,17 @@ class Contract {
           });
           this.ticketsOnSocialSaleLoaded$.next(toReturn);
         });
+      });
+  }
+
+  executeTicket(barCode) {
+    const { receiveTicket } = this.meta.methods;
+    receiveTicket(barCode)
+      .send({
+        from: this.account
+      })
+      .then(msg => {
+        this.ticketExecuted$.next(msg);
       });
   }
 }

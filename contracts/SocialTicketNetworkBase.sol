@@ -67,6 +67,10 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         _;
     }
 
+    modifier notOwner(uint _barCode) {
+        require(msg.sender != tickets[_barCode], "SENDER IS ALREADY THE OWNER OF THE TICKET")
+    }
+
      modifier paidEnough(uint _price) {
         require(msg.value >= _price, "PAID VALUE IS NOT ENOUGH");
         _;
@@ -223,6 +227,7 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
 
     function socialBuyTicket(uint _barCode) public
         onlySocialMember
+        notOwner(_barCode)
         verifyCaller(msg.sender)
         onSocialSale(_barCode)
         paidEnough(ticketsForSocialSale[_barCode])
