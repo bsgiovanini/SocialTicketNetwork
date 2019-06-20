@@ -1,10 +1,10 @@
 import socialTicketNetworkArtifact from "../../build/contracts/SocialTicketNetworkBase.json";
 import Web3 from "web3";
-import { Subject } from "rxjs";
+import { Subject, BehaviorSubject } from "rxjs";
 
 class Contract {
   constructor() {
-    this.contractLoaded$ = new Subject();
+    this.contractLoaded$ = new BehaviorSubject();
     this.isOwner$ = new Subject();
     this.isSocialMember$ = new Subject();
     this.role$ = new Subject();
@@ -12,6 +12,7 @@ class Contract {
     this.owner$ = new Subject();
     this.ticketGenerated$ = new Subject();
     this.myTicketsLoaded$ = new Subject();
+    this.organizedTicketsLoaded$ = new Subject();
     this.ticketIsOnSale$ = new Subject();
     this.ticketPriceByTicket$ = new Subject();
     this.ticketExpired$ = new Subject();
@@ -177,7 +178,7 @@ class Contract {
         const toReturn = [];
         const promises = [];
         tickets.forEach(ticket => {
-          promises.push(getTicketByBarCode(ticket).call());
+          if (ticket > 0) promises.push(getTicketByBarCode(ticket).call());
         });
         Promise.all(promises).then(data => {
           data.forEach(tkt => {
@@ -196,6 +197,35 @@ class Contract {
         });
       });
   }
+
+  loadTicketsOrganizedByMe() {
+    const { loadTicketsByOrganizer, getTicketByBarCode } = this.meta.methods;
+    loadTicketsByOrganizer(this.account)
+      .call()
+      .then(tickets => {
+        const toReturn = [];
+        const promises = [];
+        tickets.forEach(ticket => {
+          if (ticket > 0) promises.push(getTicketByBarCode(ticket).call());
+        });
+        Promise.all(promises).then(data => {
+          data.forEach(tkt => {
+            if (tkt[2].trim().length > 0 && tkt[4] != 3)
+              toReturn.push({
+                ownerID: tkt[0],
+                eventOrganizerID: tkt[1],
+                eventName: tkt[2],
+                ticketNotes: tkt[3],
+                ticketState: tkt[4],
+                lastSocialMemberID: tkt[5],
+                barCode: tkt[6]
+              });
+          });
+          this.organizedTicketsLoaded$.next(toReturn);
+        });
+      });
+  }
+
   loadTicketsOnSale() {
     const { loadTicketsOnSale, getTicketByBarCode } = this.meta.methods;
     loadTicketsOnSale()
@@ -204,7 +234,7 @@ class Contract {
         const toReturn = [];
         const promises = [];
         tickets.forEach(ticket => {
-          promises.push(getTicketByBarCode(ticket).call());
+          if (ticket > 0) promises.push(getTicketByBarCode(ticket).call());
         });
         Promise.all(promises).then(data => {
           data.forEach(tkt => {
@@ -256,7 +286,7 @@ class Contract {
         const toReturn = [];
         const promises = [];
         tickets.forEach(ticket => {
-          promises.push(getTicketByBarCode(ticket).call());
+          if (ticket > 0) promises.push(getTicketByBarCode(ticket).call());
         });
         Promise.all(promises).then(data => {
           data.forEach(tkt => {

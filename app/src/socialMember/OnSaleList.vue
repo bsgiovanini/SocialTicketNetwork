@@ -43,7 +43,6 @@ export default {
   subscriptions() {
     return {
       ticketsOnSaleLoaded$: contractService.ticketsOnSaleLoaded$,
-      contractLoaded$: contractService.contractLoaded$,
       ticketPriceByTicket$: contractService.ticketPriceByTicket$,
       ticketBought$: contractService.ticketBought$
     };
@@ -74,14 +73,7 @@ export default {
       });
     }
   },
-  created() {
-    this.$observables.contractLoaded$.subscribe(isLoaded => {
-      if (isLoaded) {
-        this.loadTicketsOnSale();
-      } else {
-        console.error("Error loading the contract");
-      }
-    });
+  mounted() {
     this.$observables.ticketsOnSaleLoaded$.subscribe(tickets => {
       this.reloadTicketsOnSale(tickets);
     });
@@ -93,6 +85,8 @@ export default {
     this.$observables.ticketBought$.subscribe(msg => {
       this.loadTicketsOnSale();
     });
+
+    this.loadTicketsOnSale();
   }
 };
 </script>

@@ -6,7 +6,6 @@
           <v-list-tile>
             <v-list-tile-content>
               <v-list-tile-title class="title">Social Ticket Network</v-list-tile-title>
-              <v-list-tile-sub-title>{{owner$}}</v-list-tile-sub-title>
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -81,8 +80,6 @@ export default {
       if (isLoaded) {
         this.whoIsOwner();
         this.checkRole();
-      } else {
-        console.error("Error loading the contract");
       }
     });
     this.$observables.role$.subscribe(role => {

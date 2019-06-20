@@ -85,6 +85,29 @@
           </v-toolbar>
 
           <v-list subheader three-line>
+            <v-list-tile v-for="t in ticketsOnSale" :key="t.barCode">
+              <v-list-tile-content>
+                <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
+                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-avatar>
+                <img :src="getAvatarByState(t.ticketState)">
+              </v-list-tile-avatar>
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs12 sm12>
+        <v-card>
+          <v-toolbar dark>
+            <v-toolbar-title>Tickets to Expire</v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+
+          <v-list subheader three-line>
             <v-list-tile v-for="t in expirableTickets" :key="t.barCode">
               <v-list-tile-action>
                 <v-dialog v-model="dialog2" persistent max-width="290">
@@ -118,6 +141,29 @@
         </v-card>
       </v-flex>
     </v-layout>
+    <v-layout row>
+      <v-flex xs12 sm12>
+        <v-card>
+          <v-toolbar dark>
+            <v-toolbar-title>Tickets Expired</v-toolbar-title>
+            <v-spacer></v-spacer>
+          </v-toolbar>
+
+          <v-list subheader three-line>
+            <v-list-tile v-for="t in ticketsExpired" :key="t.barCode">
+              <v-list-tile-content>
+                <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
+                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+              </v-list-tile-content>
+              <v-list-tile-avatar>
+                <img :src="getAvatarByState(t.ticketState)">
+              </v-list-tile-avatar>
+            </v-list-tile>
+          </v-list>
+        </v-card>
+      </v-flex>
+    </v-layout>
   </v-container>
 </template>
 <script>
@@ -127,11 +173,11 @@ export default {
   subscriptions() {
     return {
       ticketGenerated$: contractService.ticketGenerated$,
-      myTicketsLoaded$: contractService.myTicketsLoaded$,
       contractLoaded$: contractService.contractLoaded$,
       ticketIsOnSale$: contractService.ticketIsOnSale$,
       ticketPriceByTicket$: contractService.ticketPriceByTicket$,
-      ticketExpired$: contractService.ticketExpired$
+      ticketExpired$: contractService.ticketExpired$,
+      organizedTicketsLoaded$: contractService.organizedTicketsLoaded$
     };
   },
   data: () => ({
@@ -139,7 +185,8 @@ export default {
     dialog2: false,
     expirableTickets: [],
     ticketsGenerated: [],
-    ticketsOnsale: [],
+    ticketsOnSale: [],
+    ticketsExpired: [],
     priceByTicket: {},
     rules: {
       required: value => !!value || "Required."
@@ -164,7 +211,7 @@ export default {
       contractService.generateTicket(this.eventName, this.ticketNotes);
     },
     loadMyTickets() {
-      contractService.loadMyTickets();
+      contractService.loadTicketsOrganizedByMe();
     },
     expireTicket(barCode) {
       debugger;
@@ -179,16 +226,17 @@ export default {
       return getAvatarByState(state);
     }
   },
-  created() {
+  mounted() {
     this.$observables.contractLoaded$.subscribe(isLoaded => {
       if (isLoaded) {
         this.loadMyTickets();
-      } else {
-        console.error("Error loading the contract");
       }
     });
-    this.$observables.myTicketsLoaded$.subscribe(tickets => {
-      this.expirableTickets = tickets.filter(ticket => ticket.ticketState > 0);
+    this.$observables.organizedTicketsLoaded$.subscribe(tickets => {
+      this.expirableTickets = tickets.filter(
+        ticket => ticket.ticketState > 0 && ticket.ticketState < 5
+      );
+      this.ticketsExpired = tickets.filter(ticket => ticket.ticketState == 6);
       this.ticketsGenerated = tickets.filter(ticket => ticket.ticketState == 0);
       this.ticketsOnSale = tickets.filter(ticket => ticket.ticketState == 1);
       this.ticketsOnSale.forEach(t => {
@@ -196,9 +244,6 @@ export default {
           contractService.getPriceByTicketOnSale(t.barCode);
         }
       });
-    });
-    this.$observables.ticketGenerated$.subscribe(msg => {
-      this.loadMyTickets();
     });
     this.$observables.ticketGenerated$.subscribe(msg => {
       this.loadMyTickets();

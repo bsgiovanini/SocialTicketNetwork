@@ -92,15 +92,32 @@ contract("SocialTicketNetworkBase buyTicket tests", accs => {
       from: user1
     });
 
+    let tktOnSale = await instance.ticketsForSaleList(0);
+
+    assert.equal(tktOnSale, 1);
+
+    let tkbyuser1 = await instance.ticketsByOwner(user1, 0);
+
+    assert.equal(tkbyuser1, 1);
+
     result = await instance.tickets.call(barCode);
     assert.equal(result.ticketState, 1);
 
-    let ticketPrice = await instance.ticketsForSale.call(barCode);
     let balance = 10;
     await instance.buyTicket(barCode, {
       from: user2,
       value: balance
     });
+
+    let list = await instance.loadTicketsOnSale();
+
+    assert.lengthOf(list, 0);
+
+    tkbyuser1 = await instance.loadTicketsByOwner(user1);
+    assert.lengthOf(tkbyuser1, 0);
+
+    let tkbyuser2 = await instance.ticketsByOwner(user2, 0);
+    assert.equal(tkbyuser2, 1);
 
     result = await instance.tickets.call(barCode);
     assert.equal(result.ticketState, 2);
@@ -134,6 +151,7 @@ contract("SocialTicketNetworkBase putTicketOnSocialSale tests", accs => {
 
     result = await instance.tickets.call(barCode);
     assert.equal(result.ticketState, 1);
+    assert.equal(result.ownerID, user1);
 
     let balance = 10;
     await instance.buyTicket(barCode, {
@@ -143,6 +161,7 @@ contract("SocialTicketNetworkBase putTicketOnSocialSale tests", accs => {
 
     result = await instance.tickets.call(barCode);
     assert.equal(result.ticketState, 2);
+    assert.equal(result.ownerID, user2);
 
     try {
       await instance.socialPutTicketOnSale(barCode, 15, {

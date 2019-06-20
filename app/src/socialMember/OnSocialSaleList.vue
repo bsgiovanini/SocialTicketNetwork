@@ -43,7 +43,6 @@ export default {
   subscriptions() {
     return {
       ticketsOnSocialSaleLoaded$: contractService.ticketsOnSocialSaleLoaded$,
-      contractLoaded$: contractService.contractLoaded$,
       ticketPriceBySocialTicket$: contractService.ticketPriceBySocialTicket$,
       ticketSocialBought$: contractService.ticketSocialBought$,
       ticketIsOnSocialSale$: contractService.ticketIsOnSocialSale$
@@ -76,13 +75,8 @@ export default {
     }
   },
   created() {
-    this.$observables.contractLoaded$.subscribe(isLoaded => {
-      if (isLoaded) {
-        this.loadTicketsOnSocialSale();
-      } else {
-        console.error("Error loading the contract");
-      }
-    });
+    this.loadTicketsOnSocialSale();
+
     this.$observables.ticketIsOnSocialSale$.subscribe(msg => {
       this.loadTicketsOnSocialSale();
     });
