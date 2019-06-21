@@ -32,8 +32,9 @@
                       <v-spacer></v-spacer>
                       <v-btn color="red darken-1" flat @click="dialog = false">Cancel</v-btn>
                       <v-btn
-                        color="green darken-1"
+                        color="yellow darken-1"
                         flat
+                        title="Put ticket on Sale"
                         @click="putTicketOnSocialSale(t.barCode)"
                       >Confirm</v-btn>
                     </v-card-actions>
@@ -43,7 +44,8 @@
 
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">

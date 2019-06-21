@@ -15,6 +15,7 @@
                   flat
                   icon
                   color="green"
+                  title="Buy ticket"
                   @click="socialBuyTicket(t.barCode, priceByTicket[t.barCode])"
                 >
                   <v-icon>theaters</v-icon>
@@ -23,8 +24,9 @@
 
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
                 <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">

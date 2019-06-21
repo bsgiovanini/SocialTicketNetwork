@@ -40,7 +40,7 @@
               <v-list-tile-action>
                 <v-dialog v-model="dialog" persistent max-width="290">
                   <template v-slot:activator="{ on }">
-                    <v-btn flat icon color="green" v-on="on">
+                    <v-btn flat icon color="green" title="Put ticket on Sale" v-on="on">
                       <v-icon>theaters</v-icon>
                     </v-btn>
                   </template>
@@ -66,7 +66,8 @@
 
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">
@@ -88,8 +89,9 @@
             <v-list-tile v-for="t in ticketsOnSale" :key="t.barCode">
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
                 <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">
@@ -112,7 +114,7 @@
               <v-list-tile-action>
                 <v-dialog v-model="dialog2" persistent max-width="290">
                   <template v-slot:activator="{ on }">
-                    <v-btn flat icon color="red" v-on="on">
+                    <v-btn flat icon color="red" title="Expire ticket" v-on="on">
                       <v-icon>theaters</v-icon>
                     </v-btn>
                   </template>
@@ -130,8 +132,9 @@
 
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
                 <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">
@@ -153,8 +156,9 @@
             <v-list-tile v-for="t in ticketsExpired" :key="t.barCode">
               <v-list-tile-content>
                 <v-list-tile-title>{{t.eventName}}</v-list-tile-title>
-                <v-list-tile-sub-title>{{t.ticketNotes}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Notes: {{t.ticketNotes}}</v-list-tile-sub-title>
                 <v-list-tile-sub-title>Price: {{priceByTicket[t.barCode]}}</v-list-tile-sub-title>
+                <v-list-tile-sub-title>Bar Code: {{t.barCode}}</v-list-tile-sub-title>
               </v-list-tile-content>
               <v-list-tile-avatar>
                 <img :src="getAvatarByState(t.ticketState)">

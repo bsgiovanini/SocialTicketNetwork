@@ -20,54 +20,6 @@
           <v-btn color="success" @click="add">Add</v-btn>
         </v-flex>
       </v-layout>
-      <v-layout row>
-        <v-flex xs12 sm6>
-          <v-card>
-            <v-toolbar color="purple" dark>
-              <v-toolbar-title>Event Organizers</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-
-            <v-list subheader three-line>
-              <v-subheader>Addresses</v-subheader>
-              <v-list-tile v-for="eo in eventOrganizers" :key="eo">
-                <v-list-tile-action>
-                  <v-btn flat icon color="red" @click="removeEOAddress(eo)">
-                    <v-icon>delete</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-
-                <v-list-tile-content>
-                  <v-list-tile-title>{{eo}}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
-        <v-flex xs12 sm6>
-          <v-card>
-            <v-toolbar color="purple" dark>
-              <v-toolbar-title>Event Executors</v-toolbar-title>
-              <v-spacer></v-spacer>
-            </v-toolbar>
-
-            <v-list subheader three-line>
-              <v-subheader>Addresses</v-subheader>
-              <v-list-tile v-for="ee in eventExecutors" :key="ee">
-                <v-list-tile-action>
-                  <v-btn flat icon color="red" @click="removeEEAddress(ee)">
-                    <v-icon>delete</v-icon>
-                  </v-btn>
-                </v-list-tile-action>
-
-                <v-list-tile-content>
-                  <v-list-tile-title>{{ee}}</v-list-tile-title>
-                </v-list-tile-content>
-              </v-list-tile>
-            </v-list>
-          </v-card>
-        </v-flex>
-      </v-layout>
     </v-container>
   </v-form>
 </template>
@@ -107,16 +59,6 @@ export default {
         contractService.addEventExecutor(this.address);
         this.eventExecutors.push(this.address);
       }
-    },
-    removeEEAddress(address) {
-      this.eventExecutors = this.eventExecutors.filter(
-        item => item !== address
-      );
-    },
-    removeEOAddress(address) {
-      this.eventOrganizers = this.eventOrganizers.filter(
-        item => item !== address
-      );
     }
   }
 };
