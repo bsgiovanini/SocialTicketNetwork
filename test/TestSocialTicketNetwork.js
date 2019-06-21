@@ -3,10 +3,10 @@ const SocialTicketNetworkBase = artifacts.require("SocialTicketNetworkBase");
 var accounts;
 var owner;
 
-contract("SocialTicketNetworkBase generateTicket tests", accs => {
+contract("generateTicket putOnSale expire tests", accs => {
   accounts = accs;
 
-  it("only eventOrganizers generate tickets", async () => {
+  it("only eventOrganizers generate  tickets", async () => {
     const instance = await SocialTicketNetworkBase.deployed();
 
     let user1 = accounts[1];
@@ -33,10 +33,10 @@ contract("SocialTicketNetworkBase generateTicket tests", accs => {
   });
 });
 
-contract("SocialTicketNetworkBase putTicketOnSale tests", accs => {
+contract("putTicketOnSale and expire tickets tests", accs => {
   accounts = accs;
 
-  it("only eventOrganizers who generated can sell tickets", async () => {
+  it("only eventOrganizers who generated can sell and expire tickets", async () => {
     const instance = await SocialTicketNetworkBase.deployed();
 
     let user1 = accounts[1];
@@ -209,5 +209,30 @@ contract("SocialTicketNetworkBase putTicketOnSocialSale tests", accs => {
     result = await instance.tickets.call(barCode);
     assert.equal(result.ticketState, 4);
     assert.equal(result.ownerID, user3);
+  });
+
+  it("only executors can finish tickets", async () => {
+    const instance = await SocialTicketNetworkBase.deployed();
+    let user5 = accounts[5];
+    let user6 = accounts[6];
+
+    let barCode = 1;
+    try {
+      await instance.receiveTicket(barCode, {
+        from: user6
+      });
+    } catch (error) {
+      assert.isAbove(error.message.search("DOES_NOT_HAVE_EXECUTOR_ROLE"), -1);
+    }
+
+    instance.addEventExecutors(user5);
+
+    await instance.receiveTicket(barCode, {
+      from: user5
+    });
+
+    result = await instance.tickets.call(barCode);
+    assert.equal(result.ticketState, 5);
+    assert.equal(result.ownerID, user5);
   });
 });

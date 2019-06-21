@@ -123,6 +123,10 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
         _;
     }
 
+    modifier ticketOfEventOrganizer(uint _barCode) {
+        require(tickets[_barCode].eventOrganizerID == msg.sender, "TICKET IS NOT FROM EVENT ORGANIZER");
+        _;
+    }
 
     constructor() Ownable() public payable {
         barCode = 0;
@@ -261,6 +265,7 @@ contract SocialTicketNetworkBase is Ownable, SocialTicketNetworkAccessControl {
     function expireTicket(uint _barCode) public
         onlyEventOrganizer
         notFinished(_barCode)
+        ticketOfEventOrganizer(_barCode)
         verifyCaller(msg.sender) {
 
         removeElementFromArray(_barCode, ticketsByOwner[tickets[_barCode].ownerID]);
