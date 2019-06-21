@@ -223,7 +223,7 @@ export default {
       contractService.getPriceByTicketOnSale(barCode);
     },
     getAvatarByState(state) {
-      return getAvatarByState(state);
+      return "../avatars/" + getAvatarByState(state);
     }
   },
   mounted() {

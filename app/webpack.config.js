@@ -36,7 +36,10 @@ module.exports = {
     ]
   },
   plugins: [
-    new CopyWebpackPlugin([{ from: "./src/index.html", to: "index.html" }]),
+    new CopyWebpackPlugin([
+      { from: "./src/index.html", to: "index.html" },
+      { from: "./src/avatars", to: "avatars" }
+    ]),
     new VueLoaderPlugin()
   ],
   devServer: { contentBase: path.join(__dirname, "dist"), compress: true }

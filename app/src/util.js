@@ -1,18 +1,18 @@
 export function getAvatarByState(state) {
   switch (state) {
     case "0":
-      return "https://cdn.vuetifyjs.com/images/lists/1.jpg";
+      return "smiley-happy.png";
     case "1":
-      return "https://cdn.vuetifyjs.com/images/lists/2.jpg";
+      return "smiley-wow.png";
     case "2":
-      return "https://cdn.vuetifyjs.com/images/lists/3.jpg";
+      return "smiley-stars.png";
     case "3":
-      return "https://cdn.vuetifyjs.com/images/lists/4.jpg";
+      return "smiley-money.png";
     case "4":
-      return "https://cdn.vuetifyjs.com/images/lists/5.jpg";
+      return "smiley-love.png";
     case "5":
-      return "https://cdn.vuetifyjs.com/images/lists/6.jpg";
+      return "smiley-blink.jpg";
     default:
-      return "https://cdn.vuetifyjs.com/images/lists/7.jpg";
+      return "smiley-sad.png";
   }
 }

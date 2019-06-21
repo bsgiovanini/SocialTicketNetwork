@@ -85,7 +85,7 @@ export default {
     this.$observables.role$.subscribe(role => {
       if (role === "register") {
         this.addSocialMember();
-      } else {
+      } else if (role) {
         this.role = this.roles[role];
         this.$router.push(this.role.link);
       }

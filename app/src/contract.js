@@ -7,7 +7,7 @@ class Contract {
     this.contractLoaded$ = new BehaviorSubject();
     this.isOwner$ = new Subject();
     this.isSocialMember$ = new Subject();
-    this.role$ = new Subject();
+    this.role$ = new BehaviorSubject();
     this.addressAdded$ = new Subject();
     this.owner$ = new Subject();
     this.ticketGenerated$ = new Subject();

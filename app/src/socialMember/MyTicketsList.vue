@@ -82,7 +82,7 @@ export default {
       contractService.loadMyTickets();
     },
     getAvatarByState(state) {
-      return getAvatarByState(state);
+      return "../avatars/" + getAvatarByState(state);
     }
   },
   created() {

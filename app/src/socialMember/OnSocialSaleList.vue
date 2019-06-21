@@ -63,7 +63,7 @@ export default {
       contractService.getPriceByTicketOnSocialSale(barCode);
     },
     getAvatarByState(state) {
-      return getAvatarByState(state);
+      return "../avatars/" + getAvatarByState(state);
     },
     reloadTicketsOnSocialSale(tickets) {
       this.ticketsOnSale = tickets;
