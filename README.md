@@ -135,10 +135,10 @@ For simplicity, Each ticket is managed individually.
 
 ### Social Ticket Members
 
-When an account has no role in the application, automatically it will be requested to become a Social Member as soon as it access the application for the first time. The user must approve the transaction in Metamask. As soon as he approves the transaction, he will be redirected to the Social Member Dashboard where he can see all tickets on sale, see his own tickets and tickets put a ticket on sale by other social members.
+When an account has no role in the application, automatically it will be requested to become a Social Member as soon as it access the application for the first time. The user must approve the transaction in Metamask. As soon as he approves the transaction, he will be redirected to the Social Member Dashboard where he can see all tickets on sale, see his own tickets and tickets put on sale by other social members.
 
 If a ticket was put on sale by the Event Organizer, it can be visualized on Tickets on Sale List. The Member can buy the ticket by clicking on the right icon (Metamask transaction) and it will be shown on his My tickets List. Now he can opt for present it to the Event Executor and attend the event or resell it to another member, buy clicking on the right icon of the ticket in the My tickets list. If he opts for selling the ticket to another member, he estipulates the price and it will be available on the Social Sale List for another member. A member can not buy his own ticket.
 
 ### Event Executor
 
-The same as Event Organizer, but the idea is to simulate the event attendance by the ticket owner, where the event executor will receive the ticket. This way, the event executor dashboard has a text field which the ticket bar code is filled and a button indicating the receipt of the ticket. Expired tickets are not accepted.
+The same as Event Organizer, but the idea is to simulate the event attendance by the ticket owner, where the event executor will receive the ticket. This way, the event executor dashboard has a text field where the ticket bar code is filled and a button indicating the receipt of the ticket. Expired tickets are not accepted.
